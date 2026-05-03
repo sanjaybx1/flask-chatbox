@@ -36,7 +36,7 @@
             flex: 1;
             padding: 15px;
             background: #f4f6fb;
-            overflow-y: auto;
+            overflow-y: auto; /* ✅ scroll enabled */
         }
 
         .user {
@@ -105,7 +105,7 @@
 </div>
 
 <script>
-    // Auto scroll to bottom
+    // ✅ auto scroll to latest message
     var chat = document.getElementById("chat");
     chat.scrollTop = chat.scrollHeight;
 </script>
