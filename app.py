@@ -5,6 +5,8 @@ app = Flask(__name__)
 
 # Required for session
 app.secret_key = "chatbot_secret_key"
+app.config["SESSION_PERMANENT"] = False  # ✅ ensure fresh session behavior
+
 
 def chatbot_response(u):
     u = u.lower().strip()
@@ -27,7 +29,7 @@ def chatbot_response(u):
     elif u == "is this ai":
         return "No, this is a rule-based chatbot."
 
-    # School information (Montfort CBSE Pondur)
+    # School info
     elif u == "school name":
         return "The school name is Montfort Senior Secondary School, CBSE, Pondur."
     elif u == "where is montfort school located":
@@ -59,7 +61,7 @@ def chatbot_response(u):
     elif u == "vision of the school":
         return "The school focuses on academic excellence, character building, and holistic development."
 
-    # Career guidance for students
+    # Career
     elif u == "career guidance":
         return "I provide career guidance for students interested in IT and computer science."
     elif u == "career options after school":
@@ -69,13 +71,13 @@ def chatbot_response(u):
     elif u == "importance of education":
         return "Education builds knowledge, confidence, and career opportunities."
 
-    # Technology knowledge
+    # Tech
     elif u == "what is python":
         return "Python is a popular programming language used in web development, AI, and data science."
     elif u == "what is flask":
         return "Flask is a lightweight Python web framework used to build web applications."
 
-    # Polite conversation
+    # Polite
     elif u == "thank you":
         return "You're welcome!"
     elif u == "thanks":
@@ -87,18 +89,19 @@ def chatbot_response(u):
     else:
         return "Sorry, I don't understand that. Please try asking something else."
 
+
 @app.route("/", methods=["GET", "POST"])
 def index():
 
-    # 🔹 CLEAR CHAT ON PAGE REFRESH
+    # ✅ New chat on refresh
     if request.method == "GET":
-        session.pop("chat_history", None)
+        session["chat_history"] = []
 
-    # 🔹 INITIALIZE CHAT
+    # ✅ Initialize
     if "chat_history" not in session:
         session["chat_history"] = []
 
-    # 🔹 HANDLE MESSAGE
+    # ✅ Handle message
     if request.method == "POST":
         user_input = request.form.get("message")
         bot_reply = chatbot_response(user_input)
@@ -106,10 +109,11 @@ def index():
         session["chat_history"].append(("user", user_input))
         session["chat_history"].append(("bot", bot_reply))
 
+        session.modified = True  # ✅ IMPORTANT FIX
+
     return render_template("index.html", chats=session["chat_history"])
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
-
-
+    app.run(debug=True)
